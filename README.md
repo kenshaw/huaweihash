@@ -19,5 +19,11 @@ There is a command line tool that uses the package to easily generate the
 flash, v1, v2, and v202 codes:
 ```sh
 $ go get -u github.com/knq/huaweihash/cmd/huaweicalc
-$ huaweicalc -imei
+$ huaweicalc -imei 868757025499999
+{
+  "flash": "50702788",
+  "v1": "48125080",
+  "v2": "39842371",
+  "v201": "46863554"
+}
 ```
