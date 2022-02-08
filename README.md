@@ -12,14 +12,14 @@ up on the v2 and v201 algorithms. As such, I merely imported the C code from
 Install in the usual way:
 
 ```sh
-$ go get -u github.com/knq/huaweihash
+$ go get -u github.com/kenshaw/huaweihash
 ```
 
 # Command-Line Util
 There is a command line tool that uses the package to easily generate the
 flash, v1, v2, and v202 codes:
 ```sh
-$ go get -u github.com/knq/huaweihash/cmd/huaweicalc
+$ go get -u github.com/kenshaw/huaweihash/cmd/huaweicalc
 $ huaweicalc -imei 868757025499999
 {
   "flash": "50702788",
