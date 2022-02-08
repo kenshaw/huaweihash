@@ -1,18 +1,6 @@
 package huaweihash
 
-import (
-	"bytes"
-	"errors"
-	"unsafe"
-)
-
-/*
-
-#include "encrypt.h"
-
-*/
-import "C"
-
+// Huawei identifiers.
 const (
 	E630Upgrade    = "e630upgrade"
 	Hwe620Datacard = "hwe620datacard"
@@ -20,37 +8,43 @@ const (
 )
 
 // Flash calculates the a flash code for a specified imei.
-func Flash(imei []byte) (string, error) {
+func Flash(imei []byte) (uint32, error) {
 	return encrypt(imei, []byte(E630Upgrade))
 }
 
+// FlashString calculates the a flash code for a specified imei.
+func FlashString(imei string) (uint32, error) {
+	return Flash([]byte(imei))
+}
+
 // V1 calculates the version 1 code for a specified imei.
-func V1(imei []byte) (string, error) {
+func V1(imei []byte) (uint32, error) {
 	return encrypt(imei, []byte(Hwe620Datacard))
 }
 
+// V1String calculates the version 1 code for a specified imei.
+func V1String(imei string) (uint32, error) {
+	return V1([]byte(imei))
+}
+
 // V2 calculates the version 2 code for a specified imei.
-func V2(imei []byte) (string, error) {
-	if len(imei) != 15 {
-		return "", errors.New("imei must be length 15")
-	}
+func V2(imei []byte) (uint32, error) {
+	return calc2(imei)
+}
 
-	buf := make([]byte, 40)
-	C.calc2((*C.char)(unsafe.Pointer(&imei[0])), (*C.char)(unsafe.Pointer(&buf[0])))
-
-	return string(buf[:bytes.IndexByte(buf, 0x00)]), nil
+// V2String calculates the version 2 code for a specified imei.
+func V2String(imei string) (uint32, error) {
+	return V2([]byte(imei))
 }
 
 // V201 calculates the version 201 code for a specified imei.
-func V201(imei []byte) (string, error) {
-	if len(imei) != 15 {
-		return "", errors.New("imei must be length 15")
-	}
+func V201(imei []byte) (uint32, error) {
+	return calc201(imei)
+}
 
-	buf := make([]byte, 40)
-	C.calc201((*C.char)(unsafe.Pointer(&imei[0])), (*C.char)(unsafe.Pointer(&buf[0])))
-
-	return string(buf[:bytes.IndexByte(buf, 0x00)]), nil
+// V201String calculates the version 201 code for a specified imei.
+func V201String(imei string) (uint32, error) {
+	return V201([]byte(imei))
 }
 
 /*func dump(buf []byte) string {

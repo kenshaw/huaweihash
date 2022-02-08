@@ -5,59 +5,50 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 
-	"github.com/knq/huaweihash"
-)
-
-var (
-	flagImei = flag.String("imei", "", "imei")
+	"github.com/kenshaw/huaweihash"
 )
 
 func main() {
+	imei := flag.String("imei", "", "imei")
 	flag.Parse()
-
-	// calculate flash code
-	flashCode, err := huaweihash.Flash([]byte(*flagImei))
-	if err != nil {
+	if err := run(*imei); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
+}
 
-	// calculate v1 code
-	v1Code, err := huaweihash.V1([]byte(*flagImei))
+func run(imei string) error {
+	// calculate flash, v1, v2, v201 codes
+	flash, err := huaweihash.FlashString(imei)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
+		return err
 	}
-
-	// calculate v2 code
-	v2Code, err := huaweihash.V2([]byte(*flagImei))
+	v1, err := huaweihash.V1String(imei)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
+		return err
 	}
-
-	// calculate v201 code
-	v201Code, err := huaweihash.V201([]byte(*flagImei))
+	v2, err := huaweihash.V2String(imei)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
+		return err
 	}
-
+	v201, err := huaweihash.V201String(imei)
+	if err != nil {
+		return err
+	}
 	// format output
 	m := map[string]string{
-		"flash": string(flashCode),
-		"v1":    string(v1Code),
-		"v2":    string(v2Code),
-		"v201":  string(v201Code),
+		"flash": strconv.FormatUint(uint64(flash), 10),
+		"v1":    strconv.FormatUint(uint64(v1), 10),
+		"v2":    strconv.FormatUint(uint64(v2), 10),
+		"v201":  strconv.FormatUint(uint64(v201), 10),
 	}
-
 	// json encode
 	buf, err := json.MarshalIndent(m, "", "  ")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
+		return err
 	}
-
-	fmt.Fprintf(os.Stdout, "%s\n", string(buf))
+	_, err = os.Stdout.Write(append(buf, '\n'))
+	return err
 }
