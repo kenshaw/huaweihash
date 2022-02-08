@@ -13,6 +13,7 @@ func TestCodes(t *testing.T) {
 		v201  uint32
 	}{
 		{"868757025499999", 50702788, 48125080, 39842371, 46863554},
+		{"351753039107700", 61770125, 51940123, 91170346, 47709162},
 	} {
 		switch u, err := FlashString(test.imei); {
 		case err != nil:
